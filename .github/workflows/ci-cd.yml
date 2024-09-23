@@ -1,0 +1,64 @@
+name: CI-CD Workflow
+
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+      
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+      -name: Checkout current PR code
+       uses: actions/checkout@v3
+      
+      -name: Fetch latest code from main
+       run: | 
+      	 git fetch origin main
+      	 git checkout main
+      	 git pull origin main
+      	
+      -name: Checkout pull request branch
+       run: |
+         git checkout ${{ github.event.pull_request.head.ref }}
+         git merge main
+         
+        # Install Python dependencies
+      -name: Set up Python
+       uses: actions/setup-python@v3
+       with:
+         python-version: '3.12.3' 
+      
+      -name: Install dependencies
+       run: pip install -r requirements.txt
+
+      # Run your tests
+      -name: Run tests
+       run: pytest  
+        
+
+    push:
+      runs-on: ubuntu-latest
+    
+      steps:
+       -name: Checkout main branch
+        uses: actions/checkout@v3
+
+       -name: Install dependencies
+        run: pip install -r requirements.txt
+
+       -name: Run tests
+        run: pytest  # Replace 'pytest' with your test runner command
+
+      # Build container image
+       -name: Build Docker image
+        run: |
+          docker build -t my-app:latest .
+      
+      # Print "Deploying" to the screen
+       -name: Deploy application
+        run: echo "Deploying"
