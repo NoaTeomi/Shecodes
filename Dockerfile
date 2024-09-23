@@ -4,6 +4,6 @@ FROM python:3.12
 # Set a working directory
 WORKDIR /app
 
-# Default command (this can be anything for now)
-CMD ["echo", "Placeholder Dockerfile"]
+# Default command that runs then the container starts
+CMD ["echo", "Running...done"]
 
